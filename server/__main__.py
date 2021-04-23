@@ -11,15 +11,23 @@ import csv
 
 from settings import PORT,BUFFERSIZE,ENCODING
 
+logger=logging.getLogger('main')   #логирование
+formatter = logging.Formatter(
+    '%(asctime)s - %(levelname)s - %(message)s'
+)
+handler=logging.FileHandler('info.log',encoding=ENCODING)
+handler.setLevel(logging.DEBUG)
+handler.setFormatter(formatter)    
+logger.setLevel(logging.DEBUG)
+logger.addHandler(handler)
 
 BufferSize=BUFFERSIZE
 encoding=ENCODING
 port=PORT
 
 class Server():
-    def __init__(self, logger, host, socket):
+    def __init__(self, host, socket):
         self.port = port
-        self.log = logger
         self.host = host
         self.socket = socket
 
@@ -44,33 +52,56 @@ class Server():
                 if data.endswith('exit'):
                     clients.remove(addr)
                     continue
-                print('['+str(addr[0])+']'+'='+'['+str(addr[1])+']'+'='+'['+itsatime+']'+'/'+data)
+                # print('['+str(addr[0])+']'+'='+'['+str(addr[1])+']'+'='+'['+itsatime+']'+'/'+data)
+                logger.info('['+str(addr[0])+']'+'='+'['+str(addr[1])+']'+'='+'['+itsatime+']'+'/'+data)
                 for c in clients:  #клиент не получает свои сообщения
                     if c!=addr:
                         self.socket.sendto(data.encode(encoding),c)
 
+def change_port():
+    print('*'*53)
+    port=int(input('Enter new port: '))
+    print('*'*53)
 
-def create_logger():
-    logger=logging.getLogger('main')   #логирование
-    formatter = logging.Formatter(
-        '%(asctime)s - %(levelname)s - %(message)s'
-    )
-    handler=logging.FileHandler('info.log',encoding=ENCODING)
-    handler.setLevel(logging.DEBUG)
-    handler.setFormatter(formatter)    
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(handler)
+    logger.info('Server change port = ' + str(port))
+    # recvPackets = queue.Queue()
+    # data,addr = recvPackets.get()
+    # client=(str(addr[0]),addr[1])
+    # data='Server change port = ',port
+    # s.sendto(data.ecnode(encoding),client)
+    # s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    # s.close()
+    main(port)
 
-    return logger
+def commands():  
+    command=input("Server: ")
+    if command=='/change port':
+        change_port()
+    elif command=='/remove client':
+        with open('list.csv', 'w', newline='') as file:
+            file.open()
 
-def create_server(logger):
+# def create_logger():
+#     logger=logging.getLogger('main')   #логирование
+#     formatter = logging.Formatter(
+#         '%(asctime)s - %(levelname)s - %(message)s'
+#     )
+#     handler=logging.FileHandler('info.log',encoding=ENCODING)
+#     handler.setLevel(logging.DEBUG)
+#     handler.setFormatter(formatter)    
+#     logger.setLevel(logging.DEBUG)
+#     logger.addHandler(handler)
+
+#     return logger
+
+def create_server(port):
     host = socket.gethostbyname(socket.gethostname())
 
     print('='*53)
     print('*'*18+'Server Running'+'*'*21)
     print('='*53)
-
-    print('Server hosting on IP -> ['+str(host)+'] Port -> ['+str(port)+']')    
+    print('Server hosting on IP -> ['+str(host)+'] Port -> ['+str(port)+']')  
+    logger.info('Server hosting on IP -> ['+str(host)+'] Port -> ['+str(port)+']') 
     print('='*53)
     s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     s.bind((host,port))
@@ -86,17 +117,21 @@ def RecvData(sock,recvPackets):
     while True:
         data,addr = sock.recvfrom(1024)
         recvPackets.put((data,addr))
-
-
-def main():
-    logger = create_logger()
-    srv = create_server(logger)
-    server = Server(logger, srv[0], srv[1])
+        
+def main(port):
+    # logger = create_logger()
+    srv = create_server(port)
+    server = Server(srv[0], srv[1])
     try:
         server.RunServer()
     except:
-    # logger.info('Server closed')
+        logger.info('Server closed')
         print('Server closed')
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+if len(sys.argv)==1:
+    main(port)
+elif len(sys.argv)==2:
+    commands()
+
+

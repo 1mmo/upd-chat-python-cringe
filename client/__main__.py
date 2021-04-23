@@ -101,6 +101,11 @@ class Client:
             else:
                 data = '['+name+']' + ' -> '+ data
                 s.sendto(data.encode(encoding),server)
+            # data,addr = sock.recvfrom(1024)
+            # recvPackets.put((data,addr))
+            # data,addr = recvPackets.get()
+            # data = data.decode(encoding)
+            # print(data)
         data='['+name+']' + ' <- ' + 'left the chat' 
         s.sendto(data.encode(encoding),server)
         s.close()
@@ -115,5 +120,5 @@ def main():
     except:
         pass
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+main()
