@@ -73,13 +73,22 @@ def change_port():
     # s.close()
     main(port)
 
-def commands():  
-    command=input("Server: ")
-    if command=='/change port':
-        change_port()
-    elif command=='/remove client':
-        with open('list.csv', 'w', newline='') as file:
-            file.open()
+def commands():
+    while True: 
+        command=input("Server: ")
+        if command=='/change port':
+            change_port()
+        elif command=='/remove client':
+            with open('list.csv', 'r', newline='') as file:
+                reader=csv.reader(file)
+                for row in reader:
+                    print(row)
+        elif command=='/help':
+            with open('help.txt',encoding='utf-8',newline='') as file:
+                print(file.read())
+        elif command=='/exit':
+            break
+                
 
 # def create_logger():
 #     logger=logging.getLogger('main')   #логирование
@@ -93,6 +102,7 @@ def commands():
 #     logger.addHandler(handler)
 
 #     return logger
+
 
 def create_server(port):
     host = socket.gethostbyname(socket.gethostname())
