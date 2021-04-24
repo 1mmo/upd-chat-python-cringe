@@ -49,7 +49,7 @@ class Server():
                 itsatime = time.strftime("%Y-%m-%d-%H.%M.%S", time.localtime())
                 data = data.decode(encoding) 
                 data=CringeFilter(data)  #вызов фильтра 
-                if data.endswith('exit'):
+                if data.endswith('/exit'):
                     clients.remove(addr)
                     continue
                 # print('['+str(addr[0])+']'+'='+'['+str(addr[1])+']'+'='+'['+itsatime+']'+'/'+data)
@@ -62,48 +62,25 @@ def change_port():
     print('*'*53)
     port=int(input('Enter new port: '))
     print('*'*53)
-
     logger.info('Server change port = ' + str(port))
-    # recvPackets = queue.Queue()
-    # data,addr = recvPackets.get()
-    # client=(str(addr[0]),addr[1])
-    # data='Server change port = ',port
-    # s.sendto(data.ecnode(encoding),client)
-    # s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-    # s.close()
     main(port)
 
 def commands():
     while True: 
         command=input("Server: ")
         if command=='/change port':
-            change_port()
-        elif command=='/remove client':
+            change_port(logger)
+        elif command=='/clients':
             with open('list.csv', 'r', newline='') as file:
                 reader=csv.reader(file)
                 for row in reader:
                     print(row)
         elif command=='/help':
             with open('help.txt',encoding='utf-8',newline='') as file:
-                print(file.read())
+                print(file.read()) 
         elif command=='/exit':
             break
                 
-
-# def create_logger():
-#     logger=logging.getLogger('main')   #логирование
-#     formatter = logging.Formatter(
-#         '%(asctime)s - %(levelname)s - %(message)s'
-#     )
-#     handler=logging.FileHandler('info.log',encoding=ENCODING)
-#     handler.setLevel(logging.DEBUG)
-#     handler.setFormatter(formatter)    
-#     logger.setLevel(logging.DEBUG)
-#     logger.addHandler(handler)
-
-#     return logger
-
-
 def create_server(port):
     host = socket.gethostbyname(socket.gethostname())
 
@@ -118,6 +95,9 @@ def create_server(port):
     return (host, s)
 
 def CringeFilter(data):   #фильтр слов 
+    filterword=str(input('Enter the word you want to filter: '))
+    replacement=str(input('Enter filter: '))
+    data=data.replace(filterword,replacement)
     data=data.replace('cringe','maybe cring')
     data=data.replace('Cringe','maybe cring')
     data=data.replace('died of cringe','cringan kaytis boldin')

@@ -53,11 +53,13 @@ class Client:
         encoding=ENCODING
         host = socket.gethostbyname(socket.gethostname())
 
-        print('='*53)
-        print('*'*18+'Client Running'+'*'*21)
-        print('='*53)
-        print('Client IP -> ['+str(host)+'] Port -> ['+str(self.port)+']')
-        print('='*53)
+        with open('Cringe.txt',encoding='utf-8',newline='') as file:
+            print(file.read())
+        print('='*100)
+        print('*'*40+'Client Running'+'*'*46)
+        print('='*100)
+        print(' '*27+'Client IP -> ['+str(host)+'] Port -> ['+str(self.port)+']')
+        print('='*100)
         server = (str(self.serverIP),8000)
         s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
         s.bind((host,self.port))
@@ -81,9 +83,7 @@ class Client:
                 s.sendto(data.encode(encoding),server)
                 join=True
             data = input()
-            if data == 'exit':
-                # data='['+name+']' + ' <- ' + 'left the chat' 
-                # s.sendto(data.encode(encoding),server)
+            if data == '/exit':
                 break
             elif data=='':
                 continue
@@ -96,8 +96,9 @@ class Client:
                 data='['+name+']' + ' <- ' + 'left the chat' 
                 s.sendto(data.encode(encoding),server)
                 self.Connect()
-            elif data[0]=='/': 
-                pass
+            elif data=='/help':
+                with open('help.txt',encoding='utf-8',newline='') as file:
+                    print(file.read())
             else:
                 data = '['+name+']' + ' -> '+ data
                 s.sendto(data.encode(encoding),server)
@@ -110,9 +111,7 @@ class Client:
         s.sendto(data.encode(encoding),server)
         s.close()
         os._exit(1)
-
-
-        
+      
 def main():
     client = Client()
     try:
